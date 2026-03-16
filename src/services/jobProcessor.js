@@ -3,9 +3,10 @@ const axios = require('axios');
 const API_URL = process.env.TASKPILOT_API_URL || 'http://localhost:8001';
 
 async function processJob(job) {
-    const maxRetries = job.options.maxRetries;
-    const timeout = job.options.timeout || 30000;
-    const priority = job.options.priority || 'medium';
+    const options = job.options || {};
+    const maxRetries = options.maxRetries || 0;
+    const timeout = options.timeout || 30000;
+    const priority = options.priority || 'medium';
 
     console.log(`Processing job ${job.id}: ${job.title} [${priority}] retries=${maxRetries}`);
 
