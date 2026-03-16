@@ -12,7 +12,8 @@ async function processJob(job) {
     let attempt = 0;
     while (attempt <= maxRetries) {
         try {
-            const result = await executeJobStep(job, attempt);
+            const stepResult = await executeJobStep(job, attempt);
+            const result = { summary: { itemsProcessed: stepResult.itemsProcessed }, duration: stepResult.duration };
             await markTaskComplete(job.id);
             return { jobId: job.id, status: 'completed', attempts: attempt + 1, result };
         } catch (err) {
