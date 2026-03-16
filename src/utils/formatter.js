@@ -4,7 +4,7 @@ function formatJobResult(job) {
         status: job.status,
         attempts: job.attempts,
         processedAt: new Date().toISOString(),
-        itemsProcessed: job.result.summary.itemsProcessed,
+        itemsProcessed: job.result?.summary?.itemsProcessed || 0,
         duration: job.result.duration || 0,
     };
 }
