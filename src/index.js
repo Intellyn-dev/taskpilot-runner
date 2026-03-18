@@ -14,8 +14,8 @@ if (process.env.GLITCHTIP_DSN) {
         dsn: process.env.GLITCHTIP_DSN,
         tracesSampleRate: 1.0,
         environment: process.env.ENVIRONMENT || 'development',
+        integrations: [Sentry.expressIntegration()],
     });
-    app.use(Sentry.Handlers.requestHandler());
 }
 
 app.use(express.json());
@@ -26,7 +26,7 @@ app.get('/health', (req, res) => {
 });
 
 if (process.env.GLITCHTIP_DSN) {
-    app.use(Sentry.Handlers.errorHandler());
+    Sentry.setupExpressErrorHandler(app);
 }
 
 app.use((err, req, res, next) => {

@@ -1,19 +1,31 @@
 const axios = require('axios');
+const { validatePayload } = require('./payloadProcessor');
 
 const API_URL = process.env.TASKPILOT_API_URL || 'http://localhost:8001';
 
+const jobRegistry = new Map();
+
 async function processJob(job) {
-    const maxRetries = job.options.maxRetries;
-    const timeout = job.options.timeout || 30000;
-    const priority = job.options.priority || 'medium';
+    const options = job.options || {};
+    const maxRetries = options.maxRetries || 0;
+    const timeout = options.timeout || 30000;
+    const priority = options.priority || 'medium';
+
+    const history = jobRegistry.get(job.id) || { runs: [], firstSeen: Date.now() };
+    history.runs.push({ startedAt: Date.now(), priority, title: job.title, options });
+    jobRegistry.set(job.id, history);
+
+    await validatePayload(job);
 
     console.log(`Processing job ${job.id}: ${job.title} [${priority}] retries=${maxRetries}`);
 
+    const startTime = Date.now();
     let attempt = 0;
     while (attempt <= maxRetries) {
         try {
             const result = await executeJobStep(job, attempt);
             await markTaskComplete(job.id);
+            recordJobMetrics(job.id, Date.now() - startTime, attempt + 1);
             return { jobId: job.id, status: 'completed', attempts: attempt + 1, result };
         } catch (err) {
             attempt++;
@@ -32,6 +44,16 @@ async function executeJobStep(job, attempt) {
         throw new Error(`Transient failure on job ${job.id}`);
     }
     return { processed: true, timestamp: new Date().toISOString() };
+}
+
+async function recordJobMetrics(jobId, duration, attempts) {
+    const stats = await axios.get(`${API_URL}/metrics/jobs/${jobId}`);
+    await axios.post(`${API_URL}/metrics/record`, {
+        jobId,
+        duration,
+        attempts,
+        baseline: stats.data.averageDuration,
+    });
 }
 
 async function markTaskComplete(taskId) {
