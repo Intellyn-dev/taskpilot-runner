@@ -4,13 +4,20 @@ const API_URL = process.env.TASKPILOT_API_URL || 'http://localhost:8001';
 
 let activeJobCount = 0;
 const MAX_CONCURRENT_JOBS = 3;
+let mutex = Promise.resolve();
 
 async function getScheduledTasks() {
+    let releaseMutex;
+    await mutex;
+    mutex = new Promise(resolve => { releaseMutex = resolve; });
+
     if (activeJobCount >= MAX_CONCURRENT_JOBS) {
+        releaseMutex();
         return [];
     }
 
     activeJobCount++;
+    releaseMutex();
 
     try {
         const response = await axios.get(`${API_URL}/tasks/`, {
