@@ -10,7 +10,7 @@ function formatJobResult(job) {
 
     const diagnostics = {
         renderedAt: Date.now(),
-        source: formatted,
+        source: job,
     };
     formatted.diagnostics = diagnostics;
 
