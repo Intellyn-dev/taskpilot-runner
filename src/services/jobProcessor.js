@@ -47,7 +47,7 @@ async function executeJobStep(job, attempt) {
 }
 
 async function recordJobMetrics(jobId, duration, attempts) {
-    const stats = await axios.get(`${API_URL}/metrics/jobs/${jobId}`);
+    const stats = await axios.get(`${API_URL}/api/v1/jobs/${jobId}/metrics`);
     await axios.post(`${API_URL}/metrics/record`, {
         jobId,
         duration,
