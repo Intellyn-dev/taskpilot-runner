@@ -1,13 +1,5 @@
 require('dotenv').config();
-const express = require('express');
 const Sentry = require('@sentry/node');
-const cron = require('node-cron');
-const { processJob } = require('./services/jobProcessor');
-const { getScheduledTasks } = require('./services/scheduler');
-const taskRoutes = require('./routes/tasks');
-
-const app = express();
-const PORT = process.env.PORT || 3001;
 
 if (process.env.GLITCHTIP_DSN) {
     Sentry.init({
@@ -17,6 +9,15 @@ if (process.env.GLITCHTIP_DSN) {
         integrations: [Sentry.expressIntegration()],
     });
 }
+
+const express = require('express');
+const cron = require('node-cron');
+const { processJob } = require('./services/jobProcessor');
+const { getScheduledTasks } = require('./services/scheduler');
+const taskRoutes = require('./routes/tasks');
+
+const app = express();
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use('/tasks', taskRoutes);

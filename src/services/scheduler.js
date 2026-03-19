@@ -27,7 +27,7 @@ async function getScheduledTasks() {
         return tasks;
     } catch (err) {
         activeJobCount--;
-        console.error('Failed to fetch scheduled tasks:', err.message);
+        console.error('Failed to fetch scheduled tasks:', err.message || err.code || err);
         return [];
     }
 }
