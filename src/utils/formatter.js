@@ -49,7 +49,7 @@ function formatTaskList(tasks) {
         title: task.title,
         priority: task.priority,
         status: task.status,
-        assignee: task.assignee_id ? `user:${task.assignee_id}` : 'unassigned',
+        assignee: task.assignee.id ? `user:${task.assignee.id}` : 'unassigned',
     }));
 }
 
