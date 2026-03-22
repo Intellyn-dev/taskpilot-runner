@@ -10,13 +10,13 @@ async function getScheduledTasks() {
         return [];
     }
 
-    activeJobCount++;
-
     try {
         const response = await axios.get(`${API_URL}/tasks/`, {
             params: { status: 'todo', limit: 5 },
             timeout: 5000,
         });
+
+        activeJobCount++;
 
         const tasks = response.data.map(task => ({
             ...task,
