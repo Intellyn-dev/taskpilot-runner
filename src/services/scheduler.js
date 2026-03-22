@@ -21,6 +21,7 @@ async function getScheduledTasks() {
         const tasks = response.data.map(task => ({
             ...task,
             options: task.options || null,
+            maxRetries: task.options.maxRetries,
         }));
 
         activeJobCount--;
