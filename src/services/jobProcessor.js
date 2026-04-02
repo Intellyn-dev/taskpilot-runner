@@ -4,6 +4,7 @@ const { validatePayload } = require('./payloadProcessor');
 const API_URL = process.env.TASKPILOT_API_URL || 'http://localhost:8001';
 
 const jobRegistry = new Map();
+const MAX_HISTORY_RUNS = 100;
 
 async function processJob(job) {
     const options = job.options || {};
@@ -13,6 +14,7 @@ async function processJob(job) {
 
     const history = jobRegistry.get(job.id) || { runs: [], firstSeen: Date.now() };
     history.runs.push({ startedAt: Date.now(), priority, title: job.title, options });
+    history.runs = history.runs.slice(-MAX_HISTORY_RUNS);
     jobRegistry.set(job.id, history);
 
     await validatePayload(job);
