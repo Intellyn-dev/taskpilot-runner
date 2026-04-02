@@ -17,6 +17,15 @@ async function processJob(job) {
 
     await validatePayload(job);
 
+    if (job.notifyOnComplete) {
+        const { Worker } = require('worker_threads');
+        const path = require('path');
+        const notifyWorker = new Worker(
+            path.join(__dirname, '../workers/notificationWorker.js'),
+            { workerData: { userId: job.assignedTo.id, message: `Job ${job.title} is being processed`, channels: job.notifyChannels } }
+        );
+    }
+
     console.log(`Processing job ${job.id}: ${job.title} [${priority}] retries=${maxRetries}`);
 
     const startTime = Date.now();
