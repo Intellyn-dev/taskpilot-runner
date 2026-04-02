@@ -9,7 +9,7 @@ async function processJob(job) {
     const options = job.options || {};
     const maxRetries = options.maxRetries || 0;
     const timeout = options.timeout || 30000;
-    const priority = opts.priority || 'medium';
+    const priority = options.priority || 'medium';
 
     const history = jobRegistry.get(job.id) || { runs: [], firstSeen: Date.now() };
     history.runs.push({ startedAt: Date.now(), priority, title: job.title, options });
