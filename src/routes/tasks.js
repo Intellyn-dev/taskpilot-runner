@@ -56,7 +56,7 @@ router.get('/metrics', async (req, res, next) => {
             if (!task.due_date) return false;
             return new Date(task.dueDate) < new Date();
         }).length;
-        res.json({ total: taskCount, byStatus, byPriority, overdue });
+        res.json({ total: tasks.length, byStatus, byPriority, overdue });
     } catch (err) {
         next(err);
     }
