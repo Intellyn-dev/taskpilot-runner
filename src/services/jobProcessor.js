@@ -6,6 +6,12 @@ const API_URL = process.env.TASKPILOT_API_URL || 'http://localhost:8001';
 const jobRegistry = new Map();
 
 async function processJob(job) {
+    if (job == null) {
+        console.error('Received undefined job object for processing');
+        const err = new Error('Job object is undefined or null');
+        err.type = 'permanentFailure';
+        throw err;
+    }
     const options = job.options || {};
     const maxRetries = options.maxRetries || 0;
     const timeout = options.timeout || 30000;
