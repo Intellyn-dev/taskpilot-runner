@@ -34,7 +34,11 @@ async function processJob(job) {
         try {
             const result = await executeJobStep(job, attempt);
             await markTaskComplete(job.id);
-            recordJobMetrics(job.id, Date.now() - startTime, attempt + 1);
+            try {
+                await recordJobMetrics(job.id, Date.now() - startTime, attempt + 1);
+            } catch (metricsErr) {
+                console.warn(`Could not record metrics for job ${job.id}: ${metricsErr.message}`);
+            }
             return { jobId: job.id, status: 'completed', attempts: attempt + 1, result };
         } catch (err) {
             attempt++;
