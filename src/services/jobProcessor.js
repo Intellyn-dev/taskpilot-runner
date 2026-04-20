@@ -6,6 +6,10 @@ const API_URL = process.env.TASKPILOT_API_URL || 'http://localhost:8001';
 const jobRegistry = new Map();
 
 async function processJob(job) {
+    if (!job.title && !job.name) {
+        console.warn(`Job ${job.id} is missing a title/name; defaulting to 'unnamed-job'`);
+        job.title = 'unnamed-job';
+    }
     const options = job.options || {};
     const maxRetries = options.maxRetries || 0;
     const timeout = options.timeout || 30000;
@@ -50,7 +54,7 @@ async function processJob(job) {
 async function executeJobStep(job, attempt) {
     await sleep(100 + Math.random() * 200);
     if (Math.random() < 0.1 && attempt === 0) {
-        throw new Error(`Transient failure on job ${job.id}`);
+        throw new Error(`Transient failure on job ${job.id} | ${job.title || job.name} | service=${process.env.SERVICE_NAME || 'unknown'}`);
     }
     return { processed: true, timestamp: new Date().toISOString() };
 }
