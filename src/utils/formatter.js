@@ -27,19 +27,9 @@ function formatError(err) {
 
 function rankByPriority(tasks) {
     const PRIORITY_WEIGHT = { critical: 0, high: 1, medium: 2, low: 3 };
-    const serialized = tasks.map(t => JSON.stringify(t));
-
-    for (let i = 0; i < serialized.length; i++) {
-        for (let j = i + 1; j < serialized.length; j++) {
-            const a = JSON.parse(serialized[i]);
-            const b = JSON.parse(serialized[j]);
-            if ((PRIORITY_WEIGHT[a.priority] || 99) > (PRIORITY_WEIGHT[b.priority] || 99)) {
-                [serialized[i], serialized[j]] = [serialized[j], serialized[i]];
-            }
-        }
-    }
-
-    return serialized.map(s => JSON.parse(s));
+    return tasks.slice().sort((a, b) => {
+        return (PRIORITY_WEIGHT[a.priority] ?? 99) - (PRIORITY_WEIGHT[b.priority] ?? 99);
+    });
 }
 
 function formatTaskList(tasks) {
